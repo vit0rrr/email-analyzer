@@ -34,15 +34,16 @@ public class BedrockService {
             String prompt = construirPrompt(remetente, assunto, corpo);
 
             Map<String, Object> requestBody = Map.of(
-                    "messages", List.of(
-                            Map.of("role", "user", "content", prompt)
-                    ),
-                    "inferenceConfig", Map.of(
-                            "maxTokens", 1024,
-                            "temperature", 0.3
-                    )
-            );
-
+                "messages", List.of(
+                        Map.of("role", "user", "content", List.of(
+                                Map.of("text", prompt)
+                        ))
+                ),
+                "inferenceConfig", Map.of(
+                        "maxTokens", 1024,
+                        "temperature", 0.3
+                )
+        );
             String requestJson = objectMapper.writeValueAsString(requestBody);
 
             InvokeModelRequest request = InvokeModelRequest.builder()
@@ -54,10 +55,9 @@ public class BedrockService {
             String responseBody = response.body().asUtf8String();
 
             Map<?, ?> responseMap = objectMapper.readValue(responseBody, Map.class);
-            List<?> outputList = (List<?>) responseMap.get("output");
-            Map<?, ?> outputMap = (Map<?, ?>) outputList.get(0);
-            Map<?, ?> messageMap = (Map<?, ?>) outputMap.get("message");
-            List<?> contentList = (List<?>) messageMap.get("content");
+            Map<?, ?> output = (Map<?, ?>) responseMap.get("output");
+            Map<?, ?> message = (Map<?, ?>) output.get("message");
+            List<?> contentList = (List<?>) message.get("content");
             Map<?, ?> contentMap = (Map<?, ?>) contentList.get(0);
 
             return (String) contentMap.get("text");

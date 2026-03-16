@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: email-analyzer-db
+    environment:
+      POSTGRES_DB: myemail_analyzer 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      
+    ports:
+      - "5432:5432"
